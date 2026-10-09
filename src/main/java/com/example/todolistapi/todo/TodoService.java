@@ -5,6 +5,9 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.todolistapi.common.exception.ErrorCode;
+import com.example.todolistapi.common.exception.ServiceException;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -24,8 +27,7 @@ public class TodoService {
 
 	@Transactional
 	public TodoResponse update(Long id, TodoRequest request) {
-		Todo todo = todoRepository.findById(id)
-			.orElseThrow(() -> new RuntimeException());
+		Todo todo = getTodo(id);
 
 		todo.setTitle(request.title());
 		todo.setDescription(request.description());
@@ -35,8 +37,7 @@ public class TodoService {
 
 	@Transactional
 	public void delete(Long id) {
-		Todo todo = todoRepository.findById(id)
-			.orElseThrow(() -> new RuntimeException());
+		Todo todo = getTodo(id);
 
 		todoRepository.delete(todo);
 	}
@@ -47,5 +48,10 @@ public class TodoService {
 			.stream()
 			.map(todo -> TodoResponse.from(todo))
 			.toList();
+	}
+
+	private Todo getTodo(Long id) {
+		return todoRepository.findById(id)
+			.orElseThrow(() -> new ServiceException(ErrorCode.TODO_NOT_FOUND));
 	}
 }

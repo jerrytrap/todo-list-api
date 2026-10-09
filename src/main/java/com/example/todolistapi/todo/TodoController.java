@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.todolistapi.common.response.ApiResponse;
+
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -22,25 +24,23 @@ public class TodoController {
 	private final TodoService todoService;
 
 	@PostMapping
-	public ResponseEntity<TodoResponse> create(@RequestBody TodoRequest request){
-		TodoResponse response = todoService.create(request);
-		return ResponseEntity.status(HttpStatus.CREATED).body(response);
+	public ApiResponse<TodoResponse> create(@RequestBody TodoRequest request){
+		return ApiResponse.success(HttpStatus.CREATED, todoService.create(request));
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<TodoResponse> update(@RequestBody TodoRequest request, @PathVariable Long id) {
-		TodoResponse response = todoService.update(id, request);
-		return ResponseEntity.ok(response);
+	public ApiResponse<TodoResponse> update(@RequestBody TodoRequest request, @PathVariable Long id) {
+		return ApiResponse.success(HttpStatus.OK, todoService.update(id, request));
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> delete(@PathVariable Long id) {
+	public ApiResponse<Void> delete(@PathVariable Long id) {
 		todoService.delete(id);
-		return ResponseEntity.noContent().build();
+		return ApiResponse.success(HttpStatus.NO_CONTENT);
 	}
 
 	@GetMapping
-	public ResponseEntity<List<TodoResponse>> findAll() {
-		return ResponseEntity.ok(todoService.findAll());
+	public ApiResponse<List<TodoResponse>> findAll() {
+		return ApiResponse.success(HttpStatus.OK, todoService.findAll());
 	}
 }
