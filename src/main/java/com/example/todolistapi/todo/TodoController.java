@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.todolistapi.common.response.ApiResponse;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -24,12 +25,12 @@ public class TodoController {
 	private final TodoService todoService;
 
 	@PostMapping
-	public ApiResponse<TodoResponse> create(@RequestBody TodoRequest request){
+	public ApiResponse<TodoResponse> create(@Valid @RequestBody TodoRequest request){
 		return ApiResponse.success(HttpStatus.CREATED, todoService.create(request));
 	}
 
 	@PutMapping("/{id}")
-	public ApiResponse<TodoResponse> update(@RequestBody TodoRequest request, @PathVariable Long id) {
+	public ApiResponse<TodoResponse> update(@Valid @RequestBody TodoRequest request, @PathVariable Long id) {
 		return ApiResponse.success(HttpStatus.OK, todoService.update(id, request));
 	}
 
