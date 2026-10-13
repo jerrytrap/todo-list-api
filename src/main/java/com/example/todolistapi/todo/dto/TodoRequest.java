@@ -1,4 +1,4 @@
-package com.example.todolistapi.todo;
+package com.example.todolistapi.todo.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

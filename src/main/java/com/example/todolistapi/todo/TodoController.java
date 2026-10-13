@@ -3,7 +3,7 @@ package com.example.todolistapi.todo;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.todolistapi.common.response.ApiResponse;
+import com.example.todolistapi.todo.dto.TodoRequest;
+import com.example.todolistapi.todo.dto.TodoResponse;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,23 +27,23 @@ public class TodoController {
 	private final TodoService todoService;
 
 	@PostMapping
-	public ApiResponse<TodoResponse> create(@Valid @RequestBody TodoRequest request){
-		return ApiResponse.success(HttpStatus.CREATED, todoService.create(request));
+	public ApiResponse<TodoResponse> create(@AuthenticationPrincipal Long memberId, @Valid @RequestBody TodoRequest request){
+		return ApiResponse.success(HttpStatus.CREATED, todoService.create(memberId, request));
 	}
 
-	@PutMapping("/{id}")
-	public ApiResponse<TodoResponse> update(@Valid @RequestBody TodoRequest request, @PathVariable Long id) {
-		return ApiResponse.success(HttpStatus.OK, todoService.update(id, request));
+	@PutMapping("/{todoId}")
+	public ApiResponse<TodoResponse> update(@AuthenticationPrincipal Long memberId, @Valid @RequestBody TodoRequest request, @PathVariable Long todoId) {
+		return ApiResponse.success(HttpStatus.OK, todoService.update(memberId, todoId, request));
 	}
 
-	@DeleteMapping("/{id}")
-	public ApiResponse<Void> delete(@PathVariable Long id) {
-		todoService.delete(id);
+	@DeleteMapping("/{todoId}")
+	public ApiResponse<Void> delete(@AuthenticationPrincipal Long memberId, @PathVariable Long todoId) {
+		todoService.delete(memberId, todoId);
 		return ApiResponse.success(HttpStatus.NO_CONTENT);
 	}
 
 	@GetMapping
-	public ApiResponse<List<TodoResponse>> findAll() {
-		return ApiResponse.success(HttpStatus.OK, todoService.findAll());
+	public ApiResponse<List<TodoResponse>> findAll(@AuthenticationPrincipal Long memberId) {
+		return ApiResponse.success(HttpStatus.OK, todoService.findAll(memberId));
 	}
 }

@@ -1,4 +1,6 @@
-package com.example.todolistapi.todo;
+package com.example.todolistapi.todo.dto;
+
+import com.example.todolistapi.todo.Todo;
 
 public record TodoResponse (
 	Long id,

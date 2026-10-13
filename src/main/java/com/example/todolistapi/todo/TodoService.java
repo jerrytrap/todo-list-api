@@ -7,6 +7,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.todolistapi.common.exception.ErrorCode;
 import com.example.todolistapi.common.exception.ServiceException;
+import com.example.todolistapi.member.Member;
+import com.example.todolistapi.member.MemberRepository;
+import com.example.todolistapi.todo.dto.TodoRequest;
+import com.example.todolistapi.todo.dto.TodoResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -14,10 +18,15 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TodoService {
 	private final TodoRepository todoRepository;
+	private final MemberRepository memberRepository;
 
 	@Transactional
-	public TodoResponse create(TodoRequest request) {
+	public TodoResponse create(Long userId, TodoRequest request) {
+		Member owner = memberRepository.findById(userId)
+			.orElseThrow(() -> new ServiceException(ErrorCode.USER_NOT_FOUND));
+
 		Todo todo = Todo.builder()
+			.owner(owner)
 			.title(request.title())
 			.description(request.description())
 			.build();
@@ -26,32 +35,37 @@ public class TodoService {
 	}
 
 	@Transactional
-	public TodoResponse update(Long id, TodoRequest request) {
-		Todo todo = getTodo(id);
+	public TodoResponse update(Long memberId, Long todoId, TodoRequest request) {
+		Todo todo = getOwnedTodo(memberId, todoId);
 
-		todo.setTitle(request.title());
-		todo.setDescription(request.description());
+		todo.update(request.title(), request.description());
 
 		return TodoResponse.from(todo);
 	}
 
 	@Transactional
-	public void delete(Long id) {
-		Todo todo = getTodo(id);
+	public void delete(Long memberId, Long todoId) {
+		Todo todo = getOwnedTodo(memberId, todoId);
 
 		todoRepository.delete(todo);
 	}
 
 	@Transactional(readOnly = true)
-	public List<TodoResponse> findAll() {
-		return todoRepository.findAll()
+	public List<TodoResponse> findAll(Long memberId) {
+		return todoRepository.findByOwnerId(memberId)
 			.stream()
 			.map(todo -> TodoResponse.from(todo))
 			.toList();
 	}
 
-	private Todo getTodo(Long id) {
-		return todoRepository.findById(id)
+	private Todo getOwnedTodo(Long memberId, Long todoId) {
+		Todo todo = todoRepository.findById(todoId)
 			.orElseThrow(() -> new ServiceException(ErrorCode.TODO_NOT_FOUND));
+
+		if (!todo.isOwnedBy(memberId)) {
+			throw new ServiceException(ErrorCode.FORBIDDEN);
+		}
+
+		return todo;
 	}
 }
