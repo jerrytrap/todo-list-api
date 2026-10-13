@@ -1,9 +1,9 @@
 package com.example.todolistapi.todo;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TodoRepository extends JpaRepository<Todo, Long> {
-	List<Todo> findByOwnerId(Long memberId);
+	Page<Todo> findByOwnerId(Long memberId, Pageable pageable);
 }

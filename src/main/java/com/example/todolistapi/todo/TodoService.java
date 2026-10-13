@@ -1,12 +1,13 @@
 package com.example.todolistapi.todo;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.todolistapi.common.exception.ErrorCode;
 import com.example.todolistapi.common.exception.ServiceException;
+import com.example.todolistapi.common.page.PageResponse;
 import com.example.todolistapi.member.Member;
 import com.example.todolistapi.member.MemberRepository;
 import com.example.todolistapi.todo.dto.TodoRequest;
@@ -51,11 +52,12 @@ public class TodoService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<TodoResponse> findAll(Long memberId) {
-		return todoRepository.findByOwnerId(memberId)
-			.stream()
-			.map(todo -> TodoResponse.from(todo))
-			.toList();
+	public PageResponse<TodoResponse> findAll(Long memberId, int page, int limit) {
+		PageRequest pageRequest = PageRequest.of(page, limit);
+		Page<TodoResponse> result = todoRepository.findByOwnerId(memberId, pageRequest)
+			.map(TodoResponse::from);
+
+		return PageResponse.from(result);
 	}
 
 	private Todo getOwnedTodo(Long memberId, Long todoId) {
