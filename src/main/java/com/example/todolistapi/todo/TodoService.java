@@ -2,6 +2,7 @@ package com.example.todolistapi.todo;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +13,7 @@ import com.example.todolistapi.member.Member;
 import com.example.todolistapi.member.MemberRepository;
 import com.example.todolistapi.todo.dto.TodoRequest;
 import com.example.todolistapi.todo.dto.TodoResponse;
+import com.example.todolistapi.todo.dto.TodoSearchRequest;
 
 import lombok.RequiredArgsConstructor;
 
@@ -52,9 +54,13 @@ public class TodoService {
 	}
 
 	@Transactional(readOnly = true)
-	public PageResponse<TodoResponse> findAll(Long memberId, int page, int limit) {
-		PageRequest pageRequest = PageRequest.of(page, limit);
-		Page<TodoResponse> result = todoRepository.findByOwnerId(memberId, pageRequest)
+	public PageResponse<TodoResponse> findAll(Long memberId, TodoSearchRequest request) {
+		Sort.Direction direction = Sort.Direction.fromString(request.order().getProperty());
+		String sortBy = request.sort().getProperty();
+		Sort sort = Sort.by(direction, sortBy);
+		PageRequest pageRequest = PageRequest.of(request.page() - 1, request.limit(), sort);
+
+		Page<TodoResponse> result = todoRepository.findByOwnerId(memberId, request.status(), pageRequest)
 			.map(TodoResponse::from);
 
 		return PageResponse.from(result);

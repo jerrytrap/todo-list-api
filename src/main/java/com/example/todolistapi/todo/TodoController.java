@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -17,6 +18,7 @@ import com.example.todolistapi.common.response.ApiResponse;
 import com.example.todolistapi.common.page.PageResponse;
 import com.example.todolistapi.todo.dto.TodoRequest;
 import com.example.todolistapi.todo.dto.TodoResponse;
+import com.example.todolistapi.todo.dto.TodoSearchRequest;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -56,11 +58,11 @@ public class TodoController {
 	@GetMapping
 	public ApiResponse<PageResponse<TodoResponse>> findAll(
 		@AuthenticationPrincipal Long memberId,
-		@PageableDefault(size = 5) Pageable pageable
+		@Valid @ModelAttribute TodoSearchRequest request
 	) {
 		return ApiResponse.success(
 			HttpStatus.OK,
-			todoService.findAll(memberId, pageable.getPageNumber(), pageable.getPageSize())
+			todoService.findAll(memberId, request)
 		);
 	}
 }
