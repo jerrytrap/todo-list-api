@@ -24,9 +24,9 @@ public class TodoService {
 	private final MemberRepository memberRepository;
 
 	@Transactional
-	public TodoResponse create(Long userId, TodoRequest request) {
-		Member owner = memberRepository.findById(userId)
-			.orElseThrow(() -> new ServiceException(ErrorCode.USER_NOT_FOUND));
+	public TodoResponse create(Long memberId, TodoRequest request) {
+		Member owner = memberRepository.findById(memberId)
+			.orElseThrow(() -> new ServiceException(ErrorCode.MEMBER_NOT_FOUND));
 
 		Todo todo = Todo.builder()
 			.owner(owner)
@@ -60,7 +60,7 @@ public class TodoService {
 		Sort sort = Sort.by(direction, sortBy);
 		PageRequest pageRequest = PageRequest.of(request.page() - 1, request.limit(), sort);
 
-		Page<TodoResponse> result = todoRepository.findByOwnerId(memberId, request.status(), pageRequest)
+		Page<TodoResponse> result = todoRepository.searchByOwnerId(memberId, request.status(), pageRequest)
 			.map(TodoResponse::from);
 
 		return PageResponse.from(result);

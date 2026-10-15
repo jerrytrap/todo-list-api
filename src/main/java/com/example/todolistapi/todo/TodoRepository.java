@@ -12,5 +12,5 @@ public interface TodoRepository extends JpaRepository<Todo, Long> {
     WHERE t.owner.id = :memberId
       AND (:status IS NULL OR t.status = :status)
     """)
-	Page<Todo> findByOwnerId(Long memberId, TodoStatus status, Pageable pageable);
+	Page<Todo> searchByOwnerId(Long memberId, TodoStatus status, Pageable pageable);
 }

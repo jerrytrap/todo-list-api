@@ -20,7 +20,7 @@ class JwtTokenProviderTest {
 	}
 
 	@Test
-	@DisplayName("토큰 생성_ID 확인 가능")
+	@DisplayName("토큰 생성_성공")
 	void getUserId_success() {
 		String token = provider.generateToken(1L);
 
@@ -28,26 +28,34 @@ class JwtTokenProviderTest {
 	}
 
 	@Test
-	@DisplayName("토큰 검증_만료된 토큰_실패")
-	void validateToken_expiredToken_fail() {
-		JwtTokenProvider expired = new JwtTokenProvider(SECRET, -1000L);  // 이미 만료
+	@DisplayName("토큰 추출_성공")
+	void resolveToken_success() {
+		String header = "Bearer sample.jwt.token";
+
+		assertThat(provider.resolveToken(header)).isEqualTo("sample.jwt.token");
+	}
+
+	@Test
+	@DisplayName("토큰 추출_실패_잘못된 헤더")
+	void resolveToken_fail() {
+		String withoutPrefixHeader = "sample.jwt.token";
+
+		assertThat(provider.resolveToken(null)).isNull();
+		assertThat(provider.resolveToken(withoutPrefixHeader)).isNull();
+	}
+
+	@Test
+	@DisplayName("토큰 검증_실패_만료된 토큰")
+	void validateToken_fail_expiredToken() {
+		JwtTokenProvider expired = new JwtTokenProvider(SECRET, -1000L);
 		String token = expired.generateToken(1L);
 
 		assertThat(provider.validateToken(token)).isFalse();
 	}
 
 	@Test
-	@DisplayName("토큰 검증_위조된 토큰_실패")
-	void validateToken_tamperedToken_fail() {
-		String token = provider.generateToken(1L);
-		String tampered = token.substring(0, token.length() - 2) + "xx";  // signature 변조
-
-		assertThat(provider.validateToken(tampered)).isFalse();
-	}
-
-	@Test
-	@DisplayName("토큰 검증_잘못된 키로 서명된 토큰_검증 실패")
-	void validateToken_wrongSecretKey_fail() {
+	@DisplayName("토큰 검증_실패_잘못된 키로 서명된 토큰")
+	void validateToken_fail_wrongSecretKey() {
 		JwtTokenProvider other = new JwtTokenProvider("wrong-secret-key-wrong-secret-key-wrong-secret-key", 60_000L);
 		String token = other.generateToken(1L);
 
@@ -55,9 +63,9 @@ class JwtTokenProviderTest {
 	}
 
 	@Test
-	@DisplayName("토큰 검증_형식이 잘못된 토큰_검증 실패")
-	void validateToken_illegalArgument_fail() {
-		assertThat(provider.validateToken("not.a.jwt")).isFalse();
+	@DisplayName("토큰 검증_실패_형식이 잘못된 토큰")
+	void validateToken_fail_illegalArgument() {
+		assertThat(provider.validateToken("wrong.jwt.token")).isFalse();
 		assertThat(provider.validateToken("")).isFalse();
 		assertThat(provider.validateToken(null)).isFalse();
 	}

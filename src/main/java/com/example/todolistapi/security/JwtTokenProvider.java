@@ -18,7 +18,6 @@ import jakarta.servlet.http.HttpServletRequest;
 public class JwtTokenProvider {
 	private final SecretKey key;
 	private final long expirationMs;
-	private static final String AUTHORIZATION_HEADER = "Authorization";
 	private static final String BEARER_PREFIX = "Bearer ";
 
 	public JwtTokenProvider(
@@ -56,9 +55,7 @@ public class JwtTokenProvider {
 		return Long.parseLong(parseClaims(token).getSubject());
 	}
 
-	public String resolveToken(HttpServletRequest request) {
-		String header = request.getHeader(AUTHORIZATION_HEADER);
-
+	public String resolveToken(String header) {
 		if (header != null && header.startsWith(BEARER_PREFIX)) {
 			return header.substring(BEARER_PREFIX.length());
 		}

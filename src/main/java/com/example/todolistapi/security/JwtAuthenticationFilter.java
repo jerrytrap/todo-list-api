@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private final JwtTokenProvider jwtTokenProvider;
+	private static final String AUTHORIZATION_HEADER = "Authorization";
 
 	@Override
 	protected void doFilterInternal(
@@ -26,7 +27,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		HttpServletResponse response,
 		FilterChain filterChain
 	) throws ServletException, IOException {
-		String token = jwtTokenProvider.resolveToken(request);
+		String token = jwtTokenProvider.resolveToken(request.getHeader(AUTHORIZATION_HEADER));
 
 		if (token != null && jwtTokenProvider.validateToken(token)) {
 			Authentication authentication = new UsernamePasswordAuthenticationToken(

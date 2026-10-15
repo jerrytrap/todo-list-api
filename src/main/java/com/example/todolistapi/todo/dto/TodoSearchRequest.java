@@ -17,17 +17,21 @@ public record TodoSearchRequest(
 
 	SortDirection order
 ) {
+	private final static int DEFAULT_PAGE_NUMBER = 1;
+	private final static int DEFAULT_PAGE_LIMIT = 10;
+	private final static TodoSort DEFAULT_SORT_BY = TodoSort.CREATED;
+
 	public TodoSearchRequest {
 		if (page == null) {
-			page = 1;
+			page = DEFAULT_PAGE_NUMBER;
 		}
 
 		if (limit == null) {
-			limit = 10;
+			limit = DEFAULT_PAGE_LIMIT;
 		}
 
 		if (sort == null) {
-			sort = TodoSort.CREATED;
+			sort = DEFAULT_SORT_BY;
 		}
 
 		if (order == null) {

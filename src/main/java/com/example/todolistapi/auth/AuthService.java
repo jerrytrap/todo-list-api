@@ -38,7 +38,7 @@ public class AuthService {
 
 	public TokenResponse login(LoginRequest request) {
 		Member member = memberRepository.findByEmail(request.email())
-			.orElseThrow(() -> new ServiceException(ErrorCode.USER_NOT_FOUND));
+			.orElseThrow(() -> new ServiceException(ErrorCode.MEMBER_NOT_FOUND));
 
 		if (!passwordEncoder.matches(request.password(), member.getPassword())) {
 			throw new ServiceException(ErrorCode.INVALID_PASSWORD);
