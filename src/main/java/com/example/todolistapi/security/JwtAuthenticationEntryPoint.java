@@ -3,6 +3,7 @@ package com.example.todolistapi.security;
 import java.io.IOException;
 
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -26,7 +27,8 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 		HttpServletResponse response,
 		AuthenticationException authException
 	) throws IOException {
-		ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
+		ErrorCode errorCode = authException instanceof CredentialsExpiredException
+			? ErrorCode.ACCESS_TOKEN_EXPIRED : ErrorCode.UNAUTHORIZED;
 
 		response.setStatus(errorCode.getStatus().value());
 		response.setContentType("application/json;charset=UTF-8");

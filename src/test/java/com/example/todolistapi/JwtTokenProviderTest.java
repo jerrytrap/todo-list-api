@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import com.example.todolistapi.security.JwtTokenProvider;
+import com.example.todolistapi.security.TokenStatus;
 
 class JwtTokenProviderTest {
 	private static final String SECRET = "test-secret-key-test-secret-key-test-secret-key";
@@ -16,7 +17,7 @@ class JwtTokenProviderTest {
 	void validateToken_success() {
 		String token = provider.generateToken(1L);
 
-		assertThat(provider.validateToken(token)).isTrue();
+		assertThat(provider.validateToken(token)).isEqualTo(TokenStatus.VALID);;
 	}
 
 	@Test
@@ -50,7 +51,7 @@ class JwtTokenProviderTest {
 		JwtTokenProvider expired = new JwtTokenProvider(SECRET, -1000L);
 		String token = expired.generateToken(1L);
 
-		assertThat(provider.validateToken(token)).isFalse();
+		assertThat(provider.validateToken(token)).isEqualTo(TokenStatus.EXPIRED);
 	}
 
 	@Test
@@ -59,14 +60,14 @@ class JwtTokenProviderTest {
 		JwtTokenProvider other = new JwtTokenProvider("wrong-secret-key-wrong-secret-key-wrong-secret-key", 60_000L);
 		String token = other.generateToken(1L);
 
-		assertThat(provider.validateToken(token)).isFalse();
+		assertThat(provider.validateToken(token)).isEqualTo(TokenStatus.INVALID);
 	}
 
 	@Test
 	@DisplayName("토큰 검증_실패_형식이 잘못된 토큰")
 	void validateToken_fail_illegalArgument() {
-		assertThat(provider.validateToken("wrong.jwt.token")).isFalse();
-		assertThat(provider.validateToken("")).isFalse();
-		assertThat(provider.validateToken(null)).isFalse();
+		assertThat(provider.validateToken("wrong.jwt.token")).isEqualTo(TokenStatus.INVALID);
+		assertThat(provider.validateToken("")).isEqualTo(TokenStatus.INVALID);
+		assertThat(provider.validateToken(null)).isEqualTo(TokenStatus.INVALID);
 	}
 }

@@ -1,5 +1,6 @@
 package com.example.todolistapi.auth.dto;
 
 public record TokenResponse(
-	String token
+	String accessToken,
+	String refreshToken
 ) {}
