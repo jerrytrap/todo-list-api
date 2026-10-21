@@ -44,10 +44,10 @@ public class AuthService {
 
 	public TokenResponse login(LoginRequest request) {
 		Member member = memberRepository.findByEmail(request.email())
-			.orElseThrow(() -> new ServiceException(ErrorCode.MEMBER_NOT_EXIST));
+			.orElseThrow(() -> new ServiceException(ErrorCode.INVALID_CREDENTIALS));
 
 		if (!passwordEncoder.matches(request.password(), member.getPassword())) {
-			throw new ServiceException(ErrorCode.INVALID_PASSWORD);
+			throw new ServiceException(ErrorCode.INVALID_CREDENTIALS);
 		}
 
 		String accessToken = jwtTokenProvider.generateToken(member.getId());
@@ -58,9 +58,8 @@ public class AuthService {
 
 	public TokenResponse refresh(RefreshRequest request) {
 		String refreshToken = request.refreshToken();
-		Long userId = refreshTokenService.validateToken(refreshToken);
+		Long userId = refreshTokenService.validateAndRevokeToken(refreshToken);
 
-		refreshTokenService.revokeToken(refreshToken);
 		String accessToken = jwtTokenProvider.generateToken(userId);
 		String newRefreshToken = refreshTokenService.generateToken(userId);
 

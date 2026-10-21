@@ -41,9 +41,9 @@ public class RefreshTokenService {
 		return refreshToken;
 	}
 
-	public Long validateToken(String refreshToken) {
+	public Long validateAndRevokeToken(String refreshToken) {
 		String key = KEY_PREFIX + hashToken(refreshToken);
-		String userId = redisTemplate.opsForValue().get(key);
+		String userId = redisTemplate.opsForValue().getAndDelete(key);
 
 		if (userId == null) {
 			throw new ServiceException(ErrorCode.INVALID_REFRESH_TOKEN);

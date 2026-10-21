@@ -77,7 +77,7 @@ public class TodoServiceTest {
 
 	@Test
 	@DisplayName("Todo 생성_실패_존재하지 않는 사용자")
-	void create_memberNotFound() {
+	void create_fail_memberNotFound() {
 		// given
 		Long memberId = 1L;
 		TodoRequest request = new TodoRequest("test title", "test description");
