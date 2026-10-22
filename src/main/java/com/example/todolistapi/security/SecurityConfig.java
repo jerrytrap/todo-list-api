@@ -11,6 +11,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 
+import com.example.todolistapi.common.ratelimit.RateLimitFilter;
+
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -18,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
 	private final JwtAuthenticationFilter jwtAuthenticationFilter;
+	private final RateLimitFilter rateLimitFilter;
 	private final JwtAuthenticationEntryPoint authenticationEntryPoint;
 	private final JwtAccessDeniedHandler accessDeniedHandler;
 
@@ -34,6 +37,7 @@ public class SecurityConfig {
 				.authenticationEntryPoint(authenticationEntryPoint)
 				.accessDeniedHandler(accessDeniedHandler))
 			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+			.addFilterAfter(rateLimitFilter, JwtAuthenticationFilter.class)
 			.headers((headers) -> headers
 				.addHeaderWriter(new XFrameOptionsHeaderWriter(XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN)));
 

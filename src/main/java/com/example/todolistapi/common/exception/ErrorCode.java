@@ -10,21 +10,22 @@ import lombok.RequiredArgsConstructor;
 public enum ErrorCode {
 	// Common
 	INVALID_INPUT(HttpStatus.BAD_REQUEST, "Invalid input"),
-	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error"),
+	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error"),
+	TOO_MANY_REQUESTS(HttpStatus.TOO_MANY_REQUESTS, "Too many requests"),
 
 	// Todo
-	TODO_NOT_FOUND(HttpStatus.NOT_FOUND, "Todo Not Found"),
+	TODO_NOT_FOUND(HttpStatus.NOT_FOUND, "Todo not found"),
 
 	// Member
-	MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "Member Not Found"),
+	MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "Member not found"),
 
 	// Auth
 	UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "Unauthorized"),
 	FORBIDDEN(HttpStatus.FORBIDDEN, "Forbidden"),
 	INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, "Invalid email or password"),
 	DUPLICATE_EMAIL(HttpStatus.CONFLICT, "Duplicate Email"),
-	ACCESS_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "Access Token Expired"),
-	INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "Invalid Refresh Token");
+	ACCESS_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "Access token expired"),
+	INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "Invalid refresh token");
 
 	private final HttpStatus status;
 	private final String message;
