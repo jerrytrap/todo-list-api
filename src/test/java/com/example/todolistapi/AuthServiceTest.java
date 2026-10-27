@@ -18,10 +18,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.example.todolistapi.auth.AuthService;
 import com.example.todolistapi.auth.RefreshTokenService;
 import com.example.todolistapi.auth.dto.LoginRequest;
-import com.example.todolistapi.auth.dto.LogoutRequest;
-import com.example.todolistapi.auth.dto.RefreshRequest;
 import com.example.todolistapi.auth.dto.RegisterRequest;
-import com.example.todolistapi.auth.dto.TokenResponse;
+import com.example.todolistapi.auth.dto.TokenPair;
 import com.example.todolistapi.common.exception.ErrorCode;
 import com.example.todolistapi.common.exception.ServiceException;
 import com.example.todolistapi.member.Member;
@@ -71,7 +69,7 @@ public class AuthServiceTest {
 			.thenReturn("refresh");
 
 		// when
-		TokenResponse response = authService.register(request);
+		TokenPair response = authService.register(request);
 
 		// then
 		ArgumentCaptor<Member> captor = ArgumentCaptor.forClass(Member.class);
@@ -126,7 +124,7 @@ public class AuthServiceTest {
 			.thenReturn("refresh");
 
 		// when
-		TokenResponse response = authService.login(request);
+		TokenPair response = authService.login(request);
 
 		// then
 		assertThat(response.accessToken()).isEqualTo("access");
@@ -178,8 +176,6 @@ public class AuthServiceTest {
 	@DisplayName("Access Token 재발급_성공")
 	void refresh_success() {
 		// given
-		RefreshRequest request = new RefreshRequest("old-refresh");
-
 		when(refreshTokenService.validateAndRevokeToken("old-refresh"))
 			.thenReturn(1L);
 
@@ -190,7 +186,7 @@ public class AuthServiceTest {
 			.thenReturn("new-refresh");
 
 		// when
-		TokenResponse response = authService.refresh(request);
+		TokenPair response = authService.refresh("old-refresh");
 
 		// then
 		assertThat(response.accessToken()).isEqualTo("new-access");
@@ -201,13 +197,11 @@ public class AuthServiceTest {
 	@DisplayName("Access Token 재발급_실패_유효하지 않은 Refresh Token")
 	void refresh_fail_invalidRefreshToken() {
 		// given
-		RefreshRequest request = new RefreshRequest("wrong-refresh");
-
 		when(refreshTokenService.validateAndRevokeToken("wrong-refresh"))
 			.thenThrow(new ServiceException(ErrorCode.INVALID_REFRESH_TOKEN));
 
 		// when, then
-		assertThatThrownBy(() -> authService.refresh(request))
+		assertThatThrownBy(() -> authService.refresh("wrong-refresh"))
 			.isInstanceOf(ServiceException.class)
 			.extracting(exception -> ((ServiceException) exception).getErrorCode())
 			.isEqualTo(ErrorCode.INVALID_REFRESH_TOKEN);
@@ -219,11 +213,8 @@ public class AuthServiceTest {
 	@Test
 	@DisplayName("로그아웃_성공_Refresh Token 삭제")
 	void logout_success_refreshTokenExists() {
-		// given
-		LogoutRequest request = new LogoutRequest("refresh");
-
 		// when
-		authService.logout(request);
+		authService.logout("refresh");
 
 		// then
 		verify(refreshTokenService).revokeToken("refresh");

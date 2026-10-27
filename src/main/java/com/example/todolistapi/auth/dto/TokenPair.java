@@ -1,5 +1,6 @@
 package com.example.todolistapi.auth.dto;
 
-public record LogoutRequest(
+public record TokenPair(
+	String accessToken,
 	String refreshToken
 ) {}

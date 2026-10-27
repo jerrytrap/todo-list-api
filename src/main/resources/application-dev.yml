@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: ${DEV_DB_URL}
-    username: ${DEV_DB_USERNAME}
-    password: ${DEV_DB_PASSWORD}
+    url: ${DEV_DB_URL:jdbc:mysql://localhost:3306/todo_dev}
+    username: ${DEV_DB_USERNAME:dev}
+    password: ${DEV_DB_PASSWORD:pwd1234}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -15,5 +15,12 @@ spring:
 
   data:
     redis:
-      host: localhost
-      port: 6379
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
+app:
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
+  cookie:
+    secure: false
+    same-site: Lax
