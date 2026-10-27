@@ -10,6 +10,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${DEV_DB_PASSWORD:-pwd1234}
       SPRING_DATA_REDIS_HOST: redis
       JWT_SECRET: ${JWT_SECRET}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
     depends_on:
       db:
         condition: service_healthy
