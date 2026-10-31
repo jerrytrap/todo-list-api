@@ -17,15 +17,15 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JwtTokenProvider {
 	private final SecretKey key;
-	private final long accessTokenExpiration;
+	private final long accessTokenExpirationSeconds;
 	private static final String BEARER_PREFIX = "Bearer ";
 
 	public JwtTokenProvider(
 		@Value("${jwt.secret}") String secret,
-		@Value("${auth.jwt.access-token-expiration}") long accessTokenExpiration
+		@Value("${auth.jwt.access-token-expiration}") long accessTokenExpirationSeconds
 	) {
 		this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
-		this.accessTokenExpiration = accessTokenExpiration;
+		this.accessTokenExpirationSeconds = accessTokenExpirationSeconds;
 	}
 
 	public String generateToken(Long userId) {
@@ -38,7 +38,7 @@ public class JwtTokenProvider {
 		return Jwts.builder()
 			.claims(claims)
 			.issuedAt(now)
-			.expiration(new Date(now.getTime() + accessTokenExpiration))
+			.expiration(new Date(now.getTime() + accessTokenExpirationSeconds * 1000L))
 			.signWith(key)
 			.compact();
 	}

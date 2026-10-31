@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -19,16 +20,27 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 
 @Component
-@RequiredArgsConstructor
 public class RateLimitFilter extends OncePerRequestFilter {
 	private final StringRedisTemplate redisTemplate;
 	private final ObjectMapper objectMapper;
+	private final int maxRequests;
+	private final int windowSeconds;
+
 	private static final String KEY_PREFIX = "rate:";
-	private static final int MAX_REQUESTS = 10;
-	private static final int WINDOW_SECONDS = 60;
+
+	public RateLimitFilter(
+		StringRedisTemplate redisTemplate,
+		ObjectMapper objectMapper,
+		@Value("${rate-limit.max-requests}") int maxRequests,
+		@Value("${rate-limit.window-seconds}") int windowSeconds
+	) {
+		this.redisTemplate = redisTemplate;
+		this.objectMapper = objectMapper;
+		this.maxRequests = maxRequests;
+		this.windowSeconds = windowSeconds;
+	}
 
 	@Override
 	protected void doFilterInternal(
@@ -38,16 +50,16 @@ public class RateLimitFilter extends OncePerRequestFilter {
 	) throws ServletException, IOException {
 		String identifier = resolveKey(request);
 		long nowSeconds = Instant.now().getEpochSecond();
-		long windowIndex = nowSeconds / WINDOW_SECONDS;
+		long windowIndex = nowSeconds / windowSeconds;
 		String key = KEY_PREFIX + identifier + ":" + windowIndex;
 
 		Long count = redisTemplate.opsForValue().increment(key);
 		if (count != null && count == 1L) {
-			redisTemplate.expire(key, Duration.ofSeconds(WINDOW_SECONDS));
+			redisTemplate.expire(key, Duration.ofSeconds(windowSeconds));
 		}
 
-		if (count != null && count > MAX_REQUESTS) {
-			long retryAfter = WINDOW_SECONDS - (nowSeconds % WINDOW_SECONDS);
+		if (count != null && count > maxRequests) {
+			long retryAfter = windowSeconds - (nowSeconds % windowSeconds);
 			writeTooManyRequests(response, retryAfter);
 
 			return;

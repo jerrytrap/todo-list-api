@@ -8,18 +8,18 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class RefreshTokenCookieProvider {
-	private final long refreshTokenExpiration;
+	private final long refreshTokenExpirationSeconds;
 	private final boolean secure;
 	private final String sameSite;
 	private static final String COOKIE_NAME = "refreshToken";
 	private static final String COOKIE_PATH = "/api/v1/auth";
 
 	public RefreshTokenCookieProvider(
-		@Value("${auth.refresh-token-expiration}") long refreshTokenExpiration,
+		@Value("${auth.refresh-token-expiration}") long refreshTokenExpirationSeconds,
 		@Value("${app.cookie.secure}") boolean secure,
 		@Value("${app.cookie.same-site}") String sameSite
 	) {
-		this.refreshTokenExpiration = refreshTokenExpiration;
+		this.refreshTokenExpirationSeconds = refreshTokenExpirationSeconds;
 		this.secure = secure;
 		this.sameSite = sameSite;
 	}
@@ -30,7 +30,7 @@ public class RefreshTokenCookieProvider {
 			.secure(secure)
 			.sameSite(sameSite)
 			.path(COOKIE_PATH)
-			.maxAge(Duration.ofMillis(refreshTokenExpiration))
+			.maxAge(Duration.ofSeconds(refreshTokenExpirationSeconds))
 			.build();
 	}
 
