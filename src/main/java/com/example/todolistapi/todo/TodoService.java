@@ -41,7 +41,7 @@ public class TodoService {
 	public TodoResponse update(Long memberId, Long todoId, TodoRequest request) {
 		Todo todo = getOwnedTodo(memberId, todoId);
 
-		todo.update(request.title(), request.description());
+		todo.update(request.status(), request.title(), request.description());
 
 		return TodoResponse.from(todo);
 	}

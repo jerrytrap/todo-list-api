@@ -50,7 +50,7 @@ public class TodoServiceTest {
 	void create_success() {
 		// given
 		Long memberId = 1L;
-		TodoRequest request = new TodoRequest("test title", "test description");
+		TodoRequest request = new TodoRequest(TodoStatus.READY, "test title", "test description");
 		Member member = getMemberWithId(memberId);
 
 		when(memberRepository.findById(memberId))
@@ -80,7 +80,7 @@ public class TodoServiceTest {
 	void create_fail_memberNotFound() {
 		// given
 		Long memberId = 1L;
-		TodoRequest request = new TodoRequest("test title", "test description");
+		TodoRequest request = new TodoRequest(TodoStatus.READY, "test title", "test description");
 
 		when(memberRepository.findById(memberId))
 			.thenReturn(Optional.empty());
@@ -102,7 +102,7 @@ public class TodoServiceTest {
 		Long todoId = 1L;
 		Member member = getMemberWithId(memberId);
 		Todo todo = getTodoWithId(todoId, member);
-		TodoRequest request = new TodoRequest("new title", "new description");
+		TodoRequest request = new TodoRequest(TodoStatus.READY, "new title", "new description");
 
 		when(todoRepository.findById(todoId))
 			.thenReturn(Optional.of(todo));
@@ -124,7 +124,7 @@ public class TodoServiceTest {
 		// given
 		Long memberId = 1L;
 		Long todoId = 1L;
-		TodoRequest request = new TodoRequest("new title", "new description");
+		TodoRequest request = new TodoRequest(TodoStatus.READY, "new title", "new description");
 
 		when(todoRepository.findById(todoId))
 			.thenReturn(Optional.empty());
@@ -145,7 +145,7 @@ public class TodoServiceTest {
 		Long todoId = 1L;
 		Member member = getMemberWithId(memberId);
 		Todo todo = getTodoWithId(todoId, member);
-		TodoRequest request = new TodoRequest("new title", "new description");
+		TodoRequest request = new TodoRequest(TodoStatus.READY, "new title", "new description");
 
 		when(todoRepository.findById(todoId))
 			.thenReturn(Optional.of(todo));

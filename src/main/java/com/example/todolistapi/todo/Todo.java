@@ -56,7 +56,8 @@ public class Todo {
 		this.description = description;
 	}
 
-	public void update(String title, String description) {
+	public void update(TodoStatus status, String title, String description) {
+		this.status = status;
 		this.title = title;
 		this.description = description;
 	}
