@@ -13,19 +13,20 @@ import lombok.Getter;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ApiResponse<T> {
-	private final int code;
+	private final int status;
+	private final String code;
 	private final String message;
 	private final T data;
 
 	public static <T> ApiResponse<T> success(HttpStatus status, T data) {
-		return new ApiResponse<>(status.value(), "Success", data);
+		return new ApiResponse<>(status.value(), null, "Success", data);
 	}
 
 	public static ApiResponse<Void> success(HttpStatus status) {
-		return new ApiResponse<>(status.value(), "Success", null);
+		return new ApiResponse<>(status.value(), null,"Success", null);
 	}
 
 	public static <T> ApiResponse<T> error(ErrorCode errorCode) {
-		return new ApiResponse<>(errorCode.getStatus().value(), errorCode.getMessage(), null);
+		return new ApiResponse<>(errorCode.getStatus().value(), errorCode.name(), errorCode.getMessage(), null);
 	}
 }

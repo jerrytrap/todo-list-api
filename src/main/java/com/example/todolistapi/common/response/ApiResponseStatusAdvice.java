@@ -26,7 +26,7 @@ public class ApiResponseStatusAdvice implements ResponseBodyAdvice<Object> {
 		ServerHttpResponse response
 	) {
 		if (body instanceof ApiResponse<?> apiResponse) {
-			response.setStatusCode(HttpStatusCode.valueOf(apiResponse.getCode()));
+			response.setStatusCode(HttpStatusCode.valueOf(apiResponse.getStatus()));
 		}
 
 		return body;
