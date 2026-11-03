@@ -21,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class RequestLogFilter extends OncePerRequestFilter {
-
 	@Override
 	protected void doFilterInternal(
 		HttpServletRequest request,
@@ -30,6 +29,7 @@ public class RequestLogFilter extends OncePerRequestFilter {
 	) throws ServletException, IOException {
 		String requestId = UUID.randomUUID().toString().substring(0, 8);
 		MDC.put(REQUEST_ID, requestId);
+		long startTime = System.nanoTime();
 
 		try {
 			filterChain.doFilter(request, response);
@@ -39,9 +39,11 @@ public class RequestLogFilter extends OncePerRequestFilter {
 				MDC.put(MEMBER_ID, memberId.toString());
 			}
 
+			long duration = (System.nanoTime() - startTime) / 1_000_000;
+
 			log.info(
-				"HTTP method={} path={} status={}",
-				request.getMethod(), request.getRequestURI(), response.getStatus()
+				"HTTP method={} path={} status={}, duration={}ms",
+				request.getMethod(), request.getRequestURI(), response.getStatus(), duration
 			);
 
 			MDC.clear();
