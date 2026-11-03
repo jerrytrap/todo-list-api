@@ -20,7 +20,9 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 public class RateLimitFilter extends OncePerRequestFilter {
 	private final StringRedisTemplate redisTemplate;
@@ -60,6 +62,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
 		if (count != null && count > maxRequests) {
 			long retryAfter = windowSeconds - (nowSeconds % windowSeconds);
+			log.warn("rate limit 초과 path={}", request.getRequestURI());
 			writeTooManyRequests(response, retryAfter);
 
 			return;

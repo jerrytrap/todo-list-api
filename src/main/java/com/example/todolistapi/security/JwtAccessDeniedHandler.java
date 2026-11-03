@@ -14,7 +14,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtAccessDeniedHandler implements AccessDeniedHandler {
@@ -26,6 +28,8 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
 		HttpServletResponse response,
 		AccessDeniedException accessDeniedException
 	) throws IOException {
+		log.warn("권한 거부 path={}", request.getRequestURI());
+
 		ErrorCode errorCode = ErrorCode.FORBIDDEN;
 
 		response.setStatus(errorCode.getStatus().value());

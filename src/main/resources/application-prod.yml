@@ -21,3 +21,9 @@ app:
   cookie:
     secure: true
     same-site: None
+
+logging:
+  level:
+    root: info
+    com.example.todolistapi: info
+    org.springframework.security: warn

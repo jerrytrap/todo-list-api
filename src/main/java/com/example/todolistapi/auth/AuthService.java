@@ -13,7 +13,9 @@ import com.example.todolistapi.member.Member;
 import com.example.todolistapi.member.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class AuthService {
@@ -37,6 +39,7 @@ public class AuthService {
 		String accessToken = jwtTokenProvider.generateToken(saved.getId());
 		String refreshToken = refreshTokenService.generateToken(saved.getId());
 
+		log.info("회원가입 완료 memberId={}", member.getId());
 		return new TokenPair(accessToken, refreshToken);
 	}
 
@@ -51,15 +54,17 @@ public class AuthService {
 		String accessToken = jwtTokenProvider.generateToken(member.getId());
 		String refreshToken = refreshTokenService.generateToken(member.getId());
 
+		log.info("로그인 성공 memberId={}", member.getId());
 		return new TokenPair(accessToken, refreshToken);
 	}
 
 	public TokenPair refresh(String refreshToken) {
-		Long userId = refreshTokenService.validateAndRevokeToken(refreshToken);
+		Long memberId = refreshTokenService.validateAndRevokeToken(refreshToken);
 
-		String accessToken = jwtTokenProvider.generateToken(userId);
-		String newRefreshToken = refreshTokenService.generateToken(userId);
+		String accessToken = jwtTokenProvider.generateToken(memberId);
+		String newRefreshToken = refreshTokenService.generateToken(memberId);
 
+		log.info("토큰 재발급 memberId={}", memberId);
 		return new TokenPair(accessToken, newRefreshToken);
 	}
 

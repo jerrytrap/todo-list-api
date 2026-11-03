@@ -20,7 +20,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -49,8 +51,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 					SecurityContextHolder.getContext().setAuthentication(authentication);
 				}
 				case EXPIRED -> {
+					log.debug("access token 만료");
 					entrypoint.commence(request, response, new CredentialsExpiredException("Access Token Expired"));
 					return;
+				}
+				case INVALID -> {
+					log.warn("유효하지 않은 access token path={}", request.getRequestURI());
 				}
 			}
 		}

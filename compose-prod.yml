@@ -31,6 +31,16 @@ services:
     mem_limit: 384m
     restart: unless-stopped
 
+    logging:
+      driver: awslogs
+      options:
+        awslogs-region: ap-northeast-2
+        awslogs-group: /ec2/todo-list-api
+        awslogs-stream: todo-list-api
+        awslogs-create-group: "false"
+        mode: non-blocking
+        max-buffer-size: 4m
+
   db:
     image: mysql:8.4
     environment:

@@ -16,7 +16,9 @@ import com.example.todolistapi.todo.dto.TodoResponse;
 import com.example.todolistapi.todo.dto.TodoSearchRequest;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TodoService {
@@ -34,15 +36,17 @@ public class TodoService {
 			.description(request.description())
 			.build();
 
-		return TodoResponse.from(todoRepository.save(todo));
+		Todo saved = todoRepository.save(todo);
+		log.info("할 일 생성 todoId={}", saved.getId());
+		return TodoResponse.from(saved);
 	}
 
 	@Transactional
 	public TodoResponse update(Long memberId, Long todoId, TodoRequest request) {
 		Todo todo = getOwnedTodo(memberId, todoId);
-
 		todo.update(request.status(), request.title(), request.description());
 
+		log.info("할 일 수정 todoId={}", todoId);
 		return TodoResponse.from(todo);
 	}
 
@@ -51,6 +55,7 @@ public class TodoService {
 		Todo todo = getOwnedTodo(memberId, todoId);
 
 		todoRepository.delete(todo);
+		log.info("할 일 삭제 todoId={}", todoId);
 	}
 
 	@Transactional(readOnly = true)
@@ -63,6 +68,8 @@ public class TodoService {
 		Page<TodoResponse> result = todoRepository.searchByOwnerId(memberId, request.status(), pageRequest)
 			.map(TodoResponse::from);
 
+		log.debug("할 일 목록 조회 page={} limit={} sort={} order={}",
+			request.page(), request.limit(), request.sort(), request.order());
 		return PageResponse.from(result);
 	}
 
