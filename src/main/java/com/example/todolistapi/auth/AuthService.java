@@ -2,6 +2,7 @@ package com.example.todolistapi.auth;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.example.todolistapi.auth.dto.LoginRequest;
 import com.example.todolistapi.auth.dto.RegisterRequest;
@@ -45,9 +46,13 @@ public class AuthService {
 
 	public TokenPair login(LoginRequest request) {
 		Member member = memberRepository.findByEmail(request.email())
-			.orElseThrow(() -> new ServiceException(ErrorCode.INVALID_CREDENTIALS));
+			.orElseThrow(() -> {
+				log.debug("로그인 실패: 존재하지 않는 이메일");
+				return new ServiceException(ErrorCode.INVALID_CREDENTIALS);
+			});
 
 		if (!passwordEncoder.matches(request.password(), member.getPassword())) {
+			log.debug("로그인 실패: 비밀번호 불일치 memberId={}", member.getId());
 			throw new ServiceException(ErrorCode.INVALID_CREDENTIALS);
 		}
 
@@ -59,12 +64,16 @@ public class AuthService {
 	}
 
 	public TokenPair refresh(String refreshToken) {
+		if (!StringUtils.hasText(refreshToken)) {
+			log.debug("Refresh Token이 없는 갱신 요청");
+			throw new ServiceException(ErrorCode.EMPTY_REFRESH_TOKEN);
+		}
+
 		Long memberId = refreshTokenService.validateAndRevokeToken(refreshToken);
 
 		String accessToken = jwtTokenProvider.generateToken(memberId);
 		String newRefreshToken = refreshTokenService.generateToken(memberId);
 
-		log.info("토큰 재발급 memberId={}", memberId);
 		return new TokenPair(accessToken, newRefreshToken);
 	}
 

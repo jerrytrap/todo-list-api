@@ -1,19 +1,17 @@
 package com.example.todolistapi.security;
 
+import static com.example.todolistapi.common.logging.MdcKey.*;
+
 import java.io.IOException;
 import java.util.List;
 
+import org.slf4j.MDC;
 import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-import com.example.todolistapi.common.exception.ErrorCode;
-import com.example.todolistapi.common.exception.ServiceException;
-import com.example.todolistapi.common.response.ApiResponse;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -43,12 +41,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 			switch (status) {
 				case VALID -> {
-					Authentication authentication = new UsernamePasswordAuthenticationToken(
-						jwtTokenProvider.getUserId(token),
-						"",
-						List.of()
-					);
+					Long memberId = jwtTokenProvider.getUserId(token);
+
+					Authentication authentication = new UsernamePasswordAuthenticationToken(memberId, "", List.of());
 					SecurityContextHolder.getContext().setAuthentication(authentication);
+
+					MDC.put(MEMBER_ID, String.valueOf(memberId));
+					request.setAttribute(MEMBER_ID, memberId);
 				}
 				case EXPIRED -> {
 					log.debug("access token 만료");
@@ -56,11 +55,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 					return;
 				}
 				case INVALID -> {
-					log.warn("유효하지 않은 access token path={}", request.getRequestURI());
+					log.debug("유효하지 않은 access token path={}", request.getRequestURI());
 				}
 			}
 		}
 
-		filterChain.doFilter(request, response);
+		try {
+			filterChain.doFilter(request, response);
+		} finally {
+			MDC.remove(MEMBER_ID);
+		}
 	}
 }

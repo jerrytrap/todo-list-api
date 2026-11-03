@@ -78,6 +78,7 @@ public class TodoService {
 			.orElseThrow(() -> new ServiceException(ErrorCode.TODO_NOT_FOUND));
 
 		if (!todo.isOwnedBy(memberId)) {
+			log.debug("권한이 없는 Todo 요청 memberId={}, todoId={}", memberId, todoId);
 			throw new ServiceException(ErrorCode.FORBIDDEN);
 		}
 

@@ -1,4 +1,6 @@
-package com.example.todolistapi.common.log;
+package com.example.todolistapi.common.logging;
+
+import static com.example.todolistapi.common.logging.MdcKey.*;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -27,15 +29,21 @@ public class RequestLogFilter extends OncePerRequestFilter {
 		FilterChain filterChain
 	) throws ServletException, IOException {
 		String requestId = UUID.randomUUID().toString().substring(0, 8);
-		MDC.put("requestId", requestId);
+		MDC.put(REQUEST_ID, requestId);
 
 		try {
 			filterChain.doFilter(request, response);
 		} finally {
+			Object memberId = request.getAttribute(MEMBER_ID);
+			if (memberId != null) {
+				MDC.put(MEMBER_ID, memberId.toString());
+			}
+
 			log.info(
 				"HTTP method={} path={} status={}",
 				request.getMethod(), request.getRequestURI(), response.getStatus()
 			);
+
 			MDC.clear();
 		}
 	}

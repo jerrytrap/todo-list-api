@@ -30,5 +30,3 @@ logging:
     root: info
     com.example.todolistapi: debug
     org.springframework.security: debug
-  pattern:
-    level: "%5p [%X{requestId}] [%X{memberId}]"

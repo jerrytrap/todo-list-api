@@ -12,6 +12,8 @@ import com.example.todolistapi.auth.dto.LoginRequest;
 import com.example.todolistapi.auth.dto.RegisterRequest;
 import com.example.todolistapi.auth.dto.TokenPair;
 import com.example.todolistapi.auth.dto.TokenResponse;
+import com.example.todolistapi.common.exception.ErrorCode;
+import com.example.todolistapi.common.exception.ServiceException;
 import com.example.todolistapi.common.response.ApiResponse;
 
 import jakarta.servlet.http.HttpServletResponse;

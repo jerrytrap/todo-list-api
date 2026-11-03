@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 public class GlobalExceptionHandler {
 	@ExceptionHandler(ServiceException.class)
 	public ApiResponse<Void> handleServiceException(ServiceException e, HttpServletRequest request) {
-		log.warn("요청 처리 실패 code={} path={}", e.getErrorCode(), request.getRequestURI());
+		log.debug("요청 처리 실패 code={} path={}", e.getErrorCode(), request.getRequestURI());
 		return ApiResponse.error(e.getErrorCode());
 	}
 
@@ -33,7 +33,7 @@ public class GlobalExceptionHandler {
 			.distinct()
 			.collect(Collectors.joining(","));
 
-		log.warn("입력 검증 실패 fields={} path={}", fields, request.getRequestURI());
+		log.debug("입력 검증 실패 fields={} path={}", fields, request.getRequestURI());
 		return ApiResponse.error(ErrorCode.INVALID_INPUT);
 	}
 
