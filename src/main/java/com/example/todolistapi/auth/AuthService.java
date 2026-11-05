@@ -69,10 +69,27 @@ public class AuthService {
 			throw new ServiceException(ErrorCode.EMPTY_REFRESH_TOKEN);
 		}
 
+		long totalStartTime = System.nanoTime();
+		long validateStartTime = System.nanoTime();
 		Long memberId = refreshTokenService.validateAndRevokeToken(refreshToken);
+		long validateDuration = (System.nanoTime() - validateStartTime) / 1_000_000;
 
+		long accessTokenStartTime = System.nanoTime();
 		String accessToken = jwtTokenProvider.generateToken(memberId);
+		long accessTokenDuration = (System.nanoTime() - accessTokenStartTime) / 1_000_000;
+
+		long refreshTokenStartTime = System.nanoTime();
 		String newRefreshToken = refreshTokenService.generateToken(memberId);
+		long refreshTokenDuration = (System.nanoTime() - refreshTokenStartTime) / 1_000_000;
+		long totalDuration = (System.nanoTime() - totalStartTime) / 1_000_000;
+
+		log.info(
+			"PERF token-refresh total={}ms validate={}ms access-jwt={}ms refresh-store={}ms",
+			totalDuration,
+			validateDuration,
+			accessTokenDuration,
+			refreshTokenDuration
+		);
 
 		return new TokenPair(accessToken, newRefreshToken);
 	}

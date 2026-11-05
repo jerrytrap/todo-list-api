@@ -65,8 +65,17 @@ public class TodoService {
 		Sort sort = Sort.by(direction, sortBy);
 		PageRequest pageRequest = PageRequest.of(request.page() - 1, request.limit(), sort);
 
+		long repositoryStartTime = System.nanoTime();
 		Page<TodoResponse> result = todoRepository.searchByOwnerId(memberId, request.status(), pageRequest)
 			.map(TodoResponse::from);
+		long repositoryDuration = (System.nanoTime() - repositoryStartTime) / 1_000_000;
+		log.info(
+			"PERF todo-search repository={}ms page={} limit={} status={}",
+			repositoryDuration,
+			request.page(),
+			request.limit(),
+			request.status()
+		);
 
 		log.debug("할 일 목록 조회 page={} limit={} sort={} order={}",
 			request.page(), request.limit(), request.sort(), request.order());
