@@ -27,3 +27,6 @@ logging:
     root: info
     com.example.todolistapi: info
     org.springframework.security: warn
+
+server:
+  forward-headers-strategy: native
