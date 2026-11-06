@@ -7,6 +7,10 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import com.example.todolistapi.security.JwtTokenProvider;
+import com.example.todolistapi.todo.TodoService;
+import com.example.todolistapi.todo.dto.SortDirection;
+import com.example.todolistapi.todo.dto.TodoSearchRequest;
+import com.example.todolistapi.todo.dto.TodoSort;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 public class WarmUpRunner {
 	private final StringRedisTemplate redisTemplate;
 	private final JwtTokenProvider jwtTokenProvider;
+	private final TodoService todoService;
+
 	private static final long NOT_EXIST_ID = -1L;
 
 	@EventListener(ApplicationReadyEvent.class)
@@ -25,6 +31,7 @@ public class WarmUpRunner {
 		try {
 			warmUpRedis();
 			warmUpTokenProvider();
+			warmUpFindTodos();
 
 			log.info("warm-up 완료 durationMs={}", System.currentTimeMillis() - start);
 		} catch (Exception e) {
@@ -37,6 +44,11 @@ public class WarmUpRunner {
 	}
 
 	private void warmUpTokenProvider() {
-		jwtTokenProvider.generateToken(NOT_EXIST_ID);
+		String token = jwtTokenProvider.generateToken(NOT_EXIST_ID);
+		jwtTokenProvider.validateToken(token);
+	}
+
+	private void warmUpFindTodos() {
+		todoService.findAll(NOT_EXIST_ID, new TodoSearchRequest(1, 5, null, TodoSort.CREATED, SortDirection.DESC));
 	}
 }
