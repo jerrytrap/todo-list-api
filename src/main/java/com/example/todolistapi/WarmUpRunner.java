@@ -6,6 +6,8 @@ import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
+import com.example.todolistapi.security.JwtTokenProvider;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -14,17 +16,27 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class WarmUpRunner {
 	private final StringRedisTemplate redisTemplate;
+	private final JwtTokenProvider jwtTokenProvider;
+	private static final long NOT_EXIST_ID = -1L;
 
 	@EventListener(ApplicationReadyEvent.class)
 	public void warmUp() {
 		long start = System.currentTimeMillis();
 		try {
-			String key = "rate:warm-up";
-			redisTemplate.execute((RedisCallback<String>) connection -> connection.ping());
+			warmUpRedis();
+			warmUpTokenProvider();
 
 			log.info("warm-up 완료 durationMs={}", System.currentTimeMillis() - start);
 		} catch (Exception e) {
 			log.warn("warm-up 실패", e);
 		}
+	}
+
+	private void warmUpRedis() {
+		redisTemplate.execute((RedisCallback<String>) connection -> connection.ping());
+	}
+
+	private void warmUpTokenProvider() {
+		jwtTokenProvider.generateToken(NOT_EXIST_ID);
 	}
 }
