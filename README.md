@@ -58,15 +58,15 @@
 
 ## 기술 스택
 
-| 분류    | 사용 기술                                               |
-|-------|-----------------------------------------------------|
-| 백엔드   | Java, Spring Boot, Spring Security, Spring Data JPA |
-| 데이터   | MySQL, Redis                                        |
-| 테스트   | JUnit 5                                             |
-| 인프라   | Amazon EC2, Docker, Docker Compose, Caddy, Duck DNS |
-| CI/CD | GitHub Actions, GHCR                                |
-| 로깅    | Amazon CloudWatch                                   |
-| 프론트엔드 | JavaScript, React, Vite, Vercel                     |
+| 분류        | 사용 기술                                               |
+|-----------|-----------------------------------------------------|
+| 백엔드       | Java, Spring Boot, Spring Security, Spring Data JPA |
+| 데이터       | MySQL, Redis                                        |
+| 테스트       | JUnit 5                                             |
+| 인프라       | Amazon EC2, Docker, Docker Compose, Caddy, Duck DNS |
+| CI/CD     | GitHub Actions, GHCR                                |
+| 로깅        | Amazon CloudWatch                                   |
+| [프론트엔드](https://github.com/jerrytrap/todo-app) | JavaScript, React, Vite, Vercel                     |
 
 ## 시스템 구성도
 <img width="1242" height="672" alt="아키텍처" src="https://github.com/user-attachments/assets/35bd7794-761b-4d8f-864c-e941cc7d5591" />
