@@ -25,6 +25,7 @@ public enum ErrorCode {
 	INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, "Invalid email or password"),
 	DUPLICATE_EMAIL(HttpStatus.CONFLICT, "Duplicate Email"),
 	ACCESS_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "Access token expired"),
+	INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "Invalid Access Token"),
 	INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "Invalid refresh token"),
 	EMPTY_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "Empty refresh token");
 

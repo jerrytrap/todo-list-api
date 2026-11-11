@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
@@ -43,27 +41,16 @@ public class JwtTokenProvider {
 			.compact();
 	}
 
-	public TokenStatus validateToken(String token) {
-		try {
-			parseClaims(token);
-			return TokenStatus.VALID;
-		} catch (ExpiredJwtException e) {
-			return TokenStatus.EXPIRED;
-		} catch(JwtException | IllegalArgumentException e) {
-			return TokenStatus.INVALID;
-		}
-	}
-
-	public long getUserId(String token) {
-		return Long.parseLong(parseClaims(token).getSubject());
-	}
-
 	public String resolveToken(String header) {
 		if (header != null && header.startsWith(BEARER_PREFIX)) {
 			return header.substring(BEARER_PREFIX.length());
 		}
 
 		return null;
+	}
+
+	public long getMemberId(String token) {
+		return Long.parseLong(parseClaims(token).getSubject());
 	}
 
 	private Claims parseClaims(String token) {
