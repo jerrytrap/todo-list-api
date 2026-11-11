@@ -28,9 +28,9 @@
 3. [시스템 구성도](#시스템-구성도)
 4. [CI/CD 구성도](#cicd-구성도)
 5. [트러블슈팅](#트러블슈팅)
-  - [Redis 기반 Rate Limiting 구현](#1-redis-기반-rate-limiting-구현)
-  - [GitHub Actions 기반 자동 배포 구축](#2-github-actions-기반-자동-배포-구축)
-  - [배포 직후 초기 응답 지연 개선](#3-배포-직후-초기-응답-지연-개선)
+   - [Redis 기반 Rate Limiting 구현](#1-redis-기반-rate-limiting-구현)
+   - [GitHub Actions 기반 자동 배포 구축](#2-github-actions-기반-자동-배포-구축)
+   - [배포 직후 초기 응답 지연 개선](#3-배포-직후-초기-응답-지연-개선)
 
 ## 주요 내용
 ### 기능
