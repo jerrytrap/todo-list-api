@@ -21,9 +21,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -66,23 +64,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 			return true;
 		} catch (ExpiredJwtException e) {
-			log.debug(
-				"access token 만료 method={} path={}",
-				request.getMethod(),
-				request.getRequestURI()
-			);
-
 			entrypoint.commence(
 				request, response,
 				new CredentialsExpiredException("Access Token Expired")
 			);
 		} catch (JwtException | IllegalArgumentException e) {
-			log.warn(
-				"유효하지 않은 access token method={} path={}",
-				request.getMethod(),
-				request.getRequestURI()
-			);
-
 			entrypoint.commence(
 				request, response,
 				new BadCredentialsException("Invalid Access Token")

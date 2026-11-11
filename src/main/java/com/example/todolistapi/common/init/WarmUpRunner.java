@@ -1,4 +1,4 @@
-package com.example.todolistapi;
+package com.example.todolistapi.common.init;
 
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -21,7 +21,7 @@ public class WarmUpRunner {
 
 	@EventListener(ApplicationReadyEvent.class)
 	public void warmUp() {
-		long start = System.currentTimeMillis();
+		long start = System.nanoTime();
 
 		try {
 			String token = jwtTokenProvider.generateToken(NOT_EXIST_ID);
@@ -34,6 +34,7 @@ public class WarmUpRunner {
 			log.warn("warm-up 실패", e);
 		}
 
-		log.info("warm-up 완료 durationMs={}", System.currentTimeMillis() - start);
+		long durationMs = (System.nanoTime() - start) / 1_000_000;
+		log.info("warm-up 완료 durationMs={}", durationMs);
 	}
 }

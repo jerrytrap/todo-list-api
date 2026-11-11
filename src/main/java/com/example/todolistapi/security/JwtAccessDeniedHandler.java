@@ -2,7 +2,6 @@ package com.example.todolistapi.security;
 
 import java.io.IOException;
 
-import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
@@ -28,7 +27,10 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
 		HttpServletResponse response,
 		AccessDeniedException accessDeniedException
 	) throws IOException {
-		log.debug("권한 거부 path={}", request.getRequestURI());
+		log.debug("권한 없음 method={} path={}",
+			request.getMethod(),
+			request.getRequestURI()
+		);
 		ErrorCode errorCode = ErrorCode.FORBIDDEN;
 
 		response.setStatus(errorCode.getStatus().value());

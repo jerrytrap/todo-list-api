@@ -63,7 +63,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
 		if (count != null && count > maxRequests) {
 			long retryAfter = windowSeconds - (nowSeconds % windowSeconds);
 
-			log.info("rate limit 초과 path={}", request.getRequestURI());
+			log.info("rate limit 초과 method={} path={}", request.getMethod(), request.getRequestURI());
 			writeTooManyRequests(response, retryAfter);
 			return;
 		}

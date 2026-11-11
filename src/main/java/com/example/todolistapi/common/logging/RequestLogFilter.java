@@ -35,6 +35,7 @@ public class RequestLogFilter extends OncePerRequestFilter {
 			filterChain.doFilter(request, response);
 		} finally {
 			Object memberId = request.getAttribute(MEMBER_ID);
+
 			if (memberId != null) {
 				MDC.put(MEMBER_ID, memberId.toString());
 			}

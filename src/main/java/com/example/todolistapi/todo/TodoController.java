@@ -32,7 +32,10 @@ public class TodoController {
 		@AuthenticationPrincipal Long memberId,
 		@Valid @RequestBody TodoRequest request
 	){
-		return ApiResponse.success(HttpStatus.CREATED, todoService.create(memberId, request));
+		return ApiResponse.success(
+			HttpStatus.CREATED,
+			todoService.create(memberId, request)
+		);
 	}
 
 	@PutMapping("/{todoId}")
@@ -41,7 +44,10 @@ public class TodoController {
 		@Valid @RequestBody TodoRequest request,
 		@PathVariable Long todoId
 	) {
-		return ApiResponse.success(HttpStatus.OK, todoService.update(memberId, todoId, request));
+		return ApiResponse.success(
+			HttpStatus.OK,
+			todoService.update(memberId, todoId, request)
+		);
 	}
 
 	@DeleteMapping("/{todoId}")

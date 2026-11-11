@@ -61,8 +61,7 @@ public class TodoService {
 	@Transactional(readOnly = true)
 	public PageResponse<TodoResponse> findAll(Long memberId, TodoSearchRequest request) {
 		Sort.Direction direction = Sort.Direction.fromString(request.order().getProperty());
-		String sortBy = request.sort().getProperty();
-		Sort sort = Sort.by(direction, sortBy);
+		Sort sort = Sort.by(direction, request.sort().getProperty());
 		PageRequest pageRequest = PageRequest.of(request.page() - 1, request.limit(), sort);
 
 		Page<TodoResponse> result = todoRepository.searchByOwnerId(memberId, request.status(), pageRequest)
