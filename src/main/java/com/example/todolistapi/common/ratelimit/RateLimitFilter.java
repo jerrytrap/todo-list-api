@@ -54,30 +54,16 @@ public class RateLimitFilter extends OncePerRequestFilter {
 		long nowSeconds = Instant.now().getEpochSecond();
 		long windowIndex = nowSeconds / windowSeconds;
 		String key = KEY_PREFIX + identifier + ":" + windowIndex;
-
-		long redisStartTime = System.nanoTime();
 		Long count = redisTemplate.opsForValue().increment(key);
-		long incrementDuration = (System.nanoTime() - redisStartTime) / 1_000_000;
-		long expireDuration = 0;
 
 		if (count != null && count == 1L) {
-			long expireStartTime = System.nanoTime();
 			redisTemplate.expire(key, Duration.ofSeconds(windowSeconds));
-			expireDuration = (System.nanoTime() - expireStartTime) / 1_000_000;
 		}
-
-		long redisDuration = (System.nanoTime() - redisStartTime) / 1_000_000;
-		log.info(
-			"PERF rate-limit redis={}ms increment={}ms expire={}ms",
-			redisDuration,
-			incrementDuration,
-			expireDuration
-		);
 
 		if (count != null && count > maxRequests) {
 			long retryAfter = windowSeconds - (nowSeconds % windowSeconds);
 
-			log.debug("rate limit 초과 path={}", request.getRequestURI());
+			log.info("rate limit 초과 path={}", request.getRequestURI());
 			writeTooManyRequests(response, retryAfter);
 			return;
 		}

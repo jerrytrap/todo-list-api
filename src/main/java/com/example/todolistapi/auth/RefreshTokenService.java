@@ -35,24 +35,18 @@ public class RefreshTokenService {
 		String refreshToken = UUID.randomUUID().toString();
 		String key = KEY_PREFIX + hashToken(refreshToken);
 
-		long redisStartTime = System.nanoTime();
 		redisTemplate.opsForValue().set(
 			key,
 			userId.toString(),
 			Duration.ofMillis(refreshTokenExpirationSeconds * 1000)
 		);
-		long redisDuration = (System.nanoTime() - redisStartTime) / 1_000_000;
-		log.info("PERF refresh-token redis-set={}ms", redisDuration);
 
 		return refreshToken;
 	}
 
 	public Long validateAndRevokeToken(String refreshToken) {
 		String key = KEY_PREFIX + hashToken(refreshToken);
-		long redisStartTime = System.nanoTime();
 		String userId = redisTemplate.opsForValue().getAndDelete(key);
-		long redisDuration = (System.nanoTime() - redisStartTime) / 1_000_000;
-		log.info("PERF refresh-token redis-get-and-delete={}ms", redisDuration);
 
 		if (userId == null) {
 			log.debug("잘못된 Refresh Token으로 요청");

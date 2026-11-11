@@ -37,23 +37,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		String token = jwtTokenProvider.resolveToken(request.getHeader(AUTHORIZATION_HEADER));
 
 		if (token != null) {
-			long validationStartTime = System.nanoTime();
 			TokenStatus status = jwtTokenProvider.validateToken(token);
-			long validationDuration = (System.nanoTime() - validationStartTime) / 1_000_000;
 
 			switch (status) {
 				case VALID -> {
-					long principalStartTime = System.nanoTime();
 					Long memberId = jwtTokenProvider.getUserId(token);
-					long principalDuration = (System.nanoTime() - principalStartTime) / 1_000_000;
 
 					Authentication authentication = new UsernamePasswordAuthenticationToken(memberId, "", List.of());
 					SecurityContextHolder.getContext().setAuthentication(authentication);
-					log.info(
-						"PERF jwt validation={}ms principal-extraction={}ms",
-						validationDuration,
-						principalDuration
-					);
 
 					MDC.put(MEMBER_ID, String.valueOf(memberId));
 					request.setAttribute(MEMBER_ID, memberId);
@@ -64,7 +55,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 					return;
 				}
 				case INVALID -> {
-					log.debug("유효하지 않은 access token path={} validation={}ms", request.getRequestURI(), validationDuration);
+					log.debug("유효하지 않은 access token path={}", request.getRequestURI());
 				}
 			}
 		}
